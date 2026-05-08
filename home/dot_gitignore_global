@@ -1,0 +1,17 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+.direnv/
+.envrc.local
+node_modules/
+.venv/
+__pycache__/
+*.pyc
