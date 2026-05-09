@@ -27,7 +27,23 @@ chezmoi init --apply https://github.com/vandy135/titan-dotfiles.git
 brew bundle --file="$HOME/.local/share/chezmoi/Brewfile"
 ```
 
-`chezmoi init` will prompt for name, email, and GitHub username (templated into `~/.gitconfig`).
+`chezmoi init` will prompt for name, email, GitHub username, and a theme.
+
+## Theme switching
+
+The `theme` chezmoi data var drives kitty + nvim simultaneously. Switch with the
+shell function:
+
+```sh
+theme                    # show current + available
+theme catppuccin-mocha   # rewrites ~/.config/chezmoi/chezmoi.toml,
+theme gruvbox-dark       # runs `chezmoi apply`,
+theme everforest         # SIGUSR1's running kitty instances to reload
+```
+
+Adding a new theme: drop a `themes/<name>.conf` into `home/dot_config/kitty/themes/`,
+add a branch in `lua/config/colorscheme.lua.tmpl`, and add the name to the
+`valid` array in the `theme()` function plus the `$themes` list in `.chezmoi.toml.tmpl`.
 
 ## Layout
 

@@ -1,8 +1,11 @@
 {{- $name := promptStringOnce . "name" "Full name" -}}
 {{- $email := promptStringOnce . "email" "Email" -}}
 {{- $github := promptStringOnce . "github" "GitHub username" -}}
+{{- $themes := list "catppuccin-mocha" "gruvbox-dark" "everforest" -}}
+{{- $theme := promptChoiceOnce . "theme" "Theme" $themes "catppuccin-mocha" -}}
 
 [data]
     name = {{ $name | quote }}
     email = {{ $email | quote }}
     github = {{ $github | quote }}
+    theme = {{ $theme | quote }}

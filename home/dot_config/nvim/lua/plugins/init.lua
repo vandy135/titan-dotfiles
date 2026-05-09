@@ -1,9 +1,14 @@
 return {
+    -- Colorschemes (active one selected by config/colorscheme.lua, templated from chezmoi `theme`)
+    { "catppuccin/nvim",          name = "catppuccin", lazy = false, priority = 1000 },
+    { "ellisonleao/gruvbox.nvim", lazy = false, priority = 1000 },
     {
-        "folke/tokyonight.nvim",
+        "neanias/everforest-nvim",
+        version = false,
+        lazy = false,
         priority = 1000,
         config = function()
-            vim.cmd.colorscheme("tokyonight-night")
+            require("everforest").setup({ background = "medium" })
         end,
     },
 
@@ -56,7 +61,7 @@ return {
         "nvim-lualine/lualine.nvim",
         config = function()
             require("lualine").setup({
-                options = { theme = "tokyonight" },
+                options = { theme = "auto" },
             })
         end,
     },

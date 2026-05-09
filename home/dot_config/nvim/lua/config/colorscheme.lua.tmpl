@@ -1,0 +1,8 @@
+-- Generated from chezmoi `theme` data var. Edit via `chezmoi edit-config`.
+{{- $scheme := "" -}}
+{{- if eq .theme "catppuccin-mocha" -}}{{- $scheme = "catppuccin-mocha" -}}
+{{- else if eq .theme "gruvbox-dark" -}}{{- $scheme = "gruvbox" -}}
+{{- else if eq .theme "everforest"   -}}{{- $scheme = "everforest" -}}
+{{- else                             -}}{{- $scheme = "habamax" -}}
+{{- end }}
+vim.cmd.colorscheme({{ $scheme | quote }})
