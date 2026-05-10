@@ -23,6 +23,23 @@ brew "tldr"
 
 # Editor
 brew "neovim"
+brew "tree-sitter-cli" # required by nvim-treesitter (main branch) to compile parsers
+
+# Language servers (consumed by nvim via vim.lsp.enable)
+brew "lua-language-server"
+brew "typescript-language-server"
+brew "pyright"
+brew "gopls"
+brew "rust-analyzer"
+brew "bash-language-server"
+brew "vscode-langservers-extracted" # provides vscode-json-language-server (jsonls)
+brew "yaml-language-server"
+
+# Formatters / linters (consumed by conform.nvim)
+brew "stylua"
+brew "shfmt"
+brew "prettier"
+brew "ruff"
 
 # Dotfiles manager
 brew "chezmoi"

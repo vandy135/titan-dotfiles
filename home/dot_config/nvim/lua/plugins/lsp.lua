@@ -2,14 +2,8 @@ return {
     {
         "neovim/nvim-lspconfig",
         event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            { "williamboman/mason.nvim", config = true },
-            "williamboman/mason-lspconfig.nvim",
-            "WhoIsSethDaniel/mason-tool-installer.nvim",
-            "hrsh7th/cmp-nvim-lsp",
-        },
+        dependencies = { "hrsh7th/cmp-nvim-lsp" },
         config = function()
-            local lspconfig = require("lspconfig")
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
             local servers = {
@@ -31,19 +25,11 @@ return {
                 yamlls = {},
             }
 
-            require("mason-lspconfig").setup({
-                ensure_installed = vim.tbl_keys(servers),
-                automatic_installation = true,
-            })
-
-            require("mason-tool-installer").setup({
-                ensure_installed = { "stylua", "shfmt", "prettier", "ruff" },
-            })
-
+            vim.lsp.config("*", { capabilities = capabilities })
             for name, opts in pairs(servers) do
-                opts.capabilities = capabilities
-                lspconfig[name].setup(opts)
+                vim.lsp.config(name, opts)
             end
+            vim.lsp.enable(vim.tbl_keys(servers))
 
             vim.api.nvim_create_autocmd("LspAttach", {
                 callback = function(ev)
