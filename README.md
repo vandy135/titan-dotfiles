@@ -14,7 +14,7 @@ macOS dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 ## Bootstrap a new Mac
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/vandy135/titan-dotfiles/main/scripts/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vandy135/titan-dotfiles/prod/scripts/bootstrap.sh | bash
 ```
 
 Or manually:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Bootstrap a fresh macOS machine.
-# Usage: curl -fsSL https://raw.githubusercontent.com/<you>/titan-dotfiles/main/scripts/bootstrap.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/<you>/titan-dotfiles/prod/scripts/bootstrap.sh | bash
 # Or:    ./scripts/bootstrap.sh
 #
 # Defaults to SSH (GitHub no longer allows password auth over HTTPS).
