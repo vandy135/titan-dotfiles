@@ -1,0 +1,13 @@
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes
+    IgnoreUnknown UseKeychain
+
+Host github.com
+    User git
+    IdentityFile ~/.ssh/github
+    IdentitiesOnly yes
+    PreferredAuthentications publickey
+
+# Per-machine overrides go in ~/.ssh/config.d/* (glob — safe if empty).
+Include config.d/*
