@@ -29,38 +29,33 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 echo "==> Installing chezmoi..."
 brew install chezmoi
 
-# Resolve SSH key: $SSH_KEY env var wins, else first existing of the common names.
-SSH_KEY="${SSH_KEY:-}"
-if [[ -z "$SSH_KEY" && "$REPO_URL" == git@github.com:* ]]; then
-    for candidate in "$HOME/.ssh/github" "$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa"; do
-        if [[ -f "$candidate" ]]; then
-            SSH_KEY="$candidate"
-            break
-        fi
-    done
-fi
-
-ssh_opts=""
-if [[ -n "$SSH_KEY" ]]; then
+# Optional: force a specific SSH key for the chezmoi clone.
+# Useful when the agent has multiple keys or when ssh config doesn't pin one.
+# Only set this if you actually need it — by default we trust your ssh config + agent.
+if [[ -n "${SSH_KEY:-}" ]]; then
     echo "==> Using SSH key: $SSH_KEY"
-    ssh_opts="-i $SSH_KEY -o IdentitiesOnly=yes"
-    export GIT_SSH_COMMAND="ssh $ssh_opts"
+    export GIT_SSH_COMMAND="ssh -i $SSH_KEY -o IdentitiesOnly=yes"
 fi
 
-# If using SSH, verify the key is loaded and GitHub accepts it before chezmoi tries.
+# Verify SSH auth to github.com using the user's normal config (no -i / IdentitiesOnly).
+# This avoids a footgun: with -i + BatchMode, ssh needs a .pub file next to the private
+# key to query the agent — if missing, it tries to decrypt the private key and fails.
 if [[ "$REPO_URL" == git@github.com:* ]]; then
     echo "==> Verifying SSH access to github.com..."
-    # shellcheck disable=SC2086
-    if ! ssh $ssh_opts -T -o BatchMode=yes -o StrictHostKeyChecking=accept-new git@github.com 2>&1 | grep -q "successfully authenticated"; then
+    if ! ssh -T -o BatchMode=yes -o StrictHostKeyChecking=accept-new git@github.com 2>&1 | grep -q "successfully authenticated"; then
         cat <<EOF >&2
 
 ERROR: SSH auth to github.com failed.
 
-Make sure your SSH key is added to GitHub and to the agent:
+Make sure your SSH key is added to GitHub and loaded in the agent:
   ssh-add --apple-use-keychain ~/.ssh/github
   ssh -T git@github.com
 
-If your key has a non-default name, point this script at it explicitly:
+If \`ssh -T git@github.com\` works interactively but this preflight fails,
+your key may need its agent entry refreshed, or you can bypass this script:
+  chezmoi init --apply $REPO_URL
+
+For non-default key names, you can also pin one explicitly:
   SSH_KEY=~/.ssh/github $0
 
 Or fall back to HTTPS for the clone:
