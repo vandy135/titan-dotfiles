@@ -31,8 +31,16 @@ brew bundle --file="$HOME/.local/share/chezmoi/Brewfile"
 
 ## Theme switching
 
-The `theme` chezmoi data var drives kitty + nvim simultaneously. Switch with the
-shell function:
+The `theme` chezmoi data var drives:
+
+- **kitty** — `dot_config/kitty/kitty.conf.tmpl` includes `themes/<theme>.conf`
+- **nvim** — `lua/config/colorscheme.lua.tmpl` selects the colorscheme
+- **starship** — `starship.toml.tmpl` defines a per-theme `[palettes.theme]` block referenced by every style
+- **bat** — `BAT_THEME` in `zsh/exports.zsh.tmpl` (gruvbox uses bat's built-in; others fall through to `ansi` and inherit the kitty palette)
+- **macOS appearance** — `run_onchange_appearance.sh.tmpl` sets dark mode
+- **wallpaper** — same script sets `~/.config/wallpapers/<theme>.png` as the desktop image. Drop a custom image at `home/dot_config/wallpapers/<theme>.png` to ship one with the repo; otherwise the script generates a solid-color PNG matching the terminal background as a fallback.
+
+Switch with the shell function:
 
 ```sh
 theme                    # show current + available
@@ -41,9 +49,19 @@ theme gruvbox-dark       # runs `chezmoi apply`,
 theme everforest         # SIGUSR1's running kitty instances to reload
 ```
 
-Adding a new theme: drop a `themes/<name>.conf` into `home/dot_config/kitty/themes/`,
-add a branch in `lua/config/colorscheme.lua.tmpl`, and add the name to the
-`valid` array in the `theme()` function plus the `$themes` list in `.chezmoi.toml.tmpl`.
+`chezmoi apply` re-runs `run_onchange_appearance.sh` automatically whenever the
+rendered theme changes, so kitty, the desktop, and macOS appearance all flip
+together. Nvim still needs a restart to pick up the new colorscheme.
+
+Adding a new theme touches:
+
+- `dot_config/kitty/themes/<name>.conf` — kitty palette
+- `dot_config/nvim/lua/config/colorscheme.lua.tmpl` — nvim branch
+- `dot_config/starship.toml.tmpl` — `[palettes.theme]` block
+- `dot_config/zsh/exports.zsh.tmpl` — `BAT_THEME` if a built-in match exists
+- `run_onchange_appearance.sh.tmpl` — `BG_HEX` branch (and dark/light if mixing)
+- `dot_config/zsh/functions.zsh` — `valid` array in `theme()`
+- `.chezmoi.toml.tmpl` — `$themes` list
 
 ## Layout
 
@@ -60,11 +78,12 @@ add a branch in `lua/config/colorscheme.lua.tmpl`, and add the name to the
     ├── dot_gitconfig.tmpl
     ├── dot_gitignore_global
     ├── run_onceafter_macos-defaults.sh
+    ├── run_onchange_appearance.sh.tmpl  re-runs on theme change
     └── dot_config/
-        ├── starship.toml
+        ├── starship.toml.tmpl
         ├── aerospace/aerospace.toml
-        ├── zsh/{aliases,exports,functions,plugins}.zsh
-        ├── kitty/kitty.conf
+        ├── zsh/{aliases,exports.tmpl,functions,plugins}.zsh
+        ├── kitty/kitty.conf.tmpl
         └── nvim/{init.lua,lua/...}
 ```
 

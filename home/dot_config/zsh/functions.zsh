@@ -57,5 +57,9 @@ theme() {
         pkill -SIGUSR1 -x kitty
     fi
 
-    echo "Theme set to $1. Restart nvim to pick up the change."
+    echo "Theme set to $1."
+    echo "  - kitty: live-reloaded"
+    echo "  - macOS appearance + wallpaper: applied via run_onchange"
+    echo "  - nvim: restart to pick up"
+    echo "  - bat / starship palette: open a new shell"
 }

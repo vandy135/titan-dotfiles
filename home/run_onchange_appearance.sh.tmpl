@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Re-runs whenever the rendered content changes (i.e. when the theme switches).
+# Sets macOS appearance + desktop wallpaper from the kitty theme's bg color.
+#
+# Theme: {{ .theme }}
+
+set -euo pipefail
+
+THEME="{{ .theme }}"
+BG_HEX="{{ if eq .theme "catppuccin-mocha" }}1E1E2E{{ else if eq .theme "gruvbox-dark" }}282828{{ else if eq .theme "everforest" }}2D353B{{ end }}"
+WALLPAPER_DIR="$HOME/.config/wallpapers"
+WALLPAPER="$WALLPAPER_DIR/$THEME.png"
+
+# All current themes are dark. Add a per-theme switch here if light themes land.
+osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to true' >/dev/null 2>&1 || true
+defaults write -g AppleInterfaceStyle Dark
+
+# Generate a solid-color PNG matching the terminal background, if missing.
+mkdir -p "$WALLPAPER_DIR"
+if [[ ! -f "$WALLPAPER" ]]; then
+    BG_HEX="$BG_HEX" OUT="$WALLPAPER" /usr/bin/env python3 <<'PY'
+import os, struct, zlib
+hex_color = os.environ["BG_HEX"]
+out = os.environ["OUT"]
+rgb = bytes.fromhex(hex_color)
+w = h = 32
+def chunk(t, d):
+    return struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
+ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
+raw = b"".join(b"\x00" + rgb * w for _ in range(h))
+with open(out, "wb") as f:
+    f.write(b"\x89PNG\r\n\x1a\n")
+    f.write(chunk(b"IHDR", ihdr))
+    f.write(chunk(b"IDAT", zlib.compress(raw)))
+    f.write(chunk(b"IEND", b""))
+PY
+fi
+
+osascript -e "tell app \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" >/dev/null
+
+echo "Appearance applied: $THEME (bg #$BG_HEX)"
