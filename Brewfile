@@ -49,5 +49,12 @@ cask "kitty"
 cask "raycast"
 cask "nikitabobko/tap/aerospace"
 
+# Apps
+cask "discord"
+cask "rustdesk"
+cask "tailscale-app"
+cask "rodecaster"
+cask "obs"
+
 # Fonts
 cask "font-jetbrains-mono-nerd-font"
